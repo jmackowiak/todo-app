@@ -22,6 +22,7 @@ export default function EmojiPicker({
 							<MaterialIcons color="#fff" name="close" size={22} />
 						</Pressable>
 					</View>
+					{children}
 				</View>
 			</Modal>
 		</View>
