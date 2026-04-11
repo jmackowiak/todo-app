@@ -1,7 +1,13 @@
+import domtoimage from 'dom-to-image'
 import * as ImagePicker from 'expo-image-picker'
 import * as MediaLibrary from 'expo-media-library'
 import { useEffect, useRef, useState } from 'react'
-import { type ImageSourcePropType, StyleSheet, View } from 'react-native'
+import {
+	type ImageSourcePropType,
+	Platform,
+	StyleSheet,
+	View,
+} from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { captureRef } from 'react-native-view-shot'
 import Button from '@/components/Button'
@@ -63,14 +69,27 @@ export default function Index() {
 
 	const onSaveImageAsync = async () => {
 		try {
-			const localUri = await captureRef(imageRef, {
-				height: 440,
-				quality: 1,
-			})
+			if (Platform.OS === 'web') {
+				const dataUrl = await domtoimage.toJpeg(imageRef.current, {
+					quality: 0.95,
+					width: 320,
+					height: 440,
+				})
 
-			await MediaLibrary.saveToLibraryAsync(localUri)
-			if (localUri) {
-				alert('Saved!')
+				const link = document.createElement('a')
+				link.download = 'sticker-smash.jpeg'
+				link.href = dataUrl
+				link.click()
+			} else {
+				const localUri = await captureRef(imageRef, {
+					height: 440,
+					quality: 1,
+				})
+
+				await MediaLibrary.saveToLibraryAsync(localUri)
+				if (localUri) {
+					alert('Saved!')
+				}
 			}
 		} catch (e) {
 			console.log(e)
